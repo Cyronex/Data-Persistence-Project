@@ -11,17 +11,30 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
+    public Text bestScoreText;
     public GameObject GameOverText;
     
     private bool m_Started = false;
     private int m_Points;
+    [SerializeField] private string playerName = "";
+    [SerializeField] private int highPoints;
     
     private bool m_GameOver = false;
+    private bool reset = false;
 
-    
     // Start is called before the first frame update
     void Start()
     {
+        //Set score to 0
+        m_Points = 0;
+        //Set the current high score to the saved high score
+        if (DataPersistence.Instance.highScore > 0)
+        {
+            highPoints = DataPersistence.Instance.highScore;
+        }
+        Debug.Log(DataPersistence.Instance.highScore);
+        bestScoreText.text = "High Score: " + DataPersistence.Instance.playerName + " : " + DataPersistence.Instance.highScore;
+
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -72,5 +85,33 @@ public class MainManager : MonoBehaviour
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+        HighScore();
+    }
+    void HighScore()
+    {
+        if (!reset)
+        {
+            //Activates once lost, current points > high Score
+            if (m_Points > highPoints)
+            {
+                highPoints = m_Points;
+                playerName = DataPersistence.Instance.playerName;
+                bestScoreText.text = "High Score: " + playerName + " : " + highPoints;
+                DataPersistence.Instance.playerName = playerName;
+                DataPersistence.Instance.highScore = highPoints;
+            }
+        }
+        else
+        {
+            //current points < high Score
+            highPoints = 0;
+            playerName = DataPersistence.Instance.playerName;
+            bestScoreText.text = "High Score + " + playerName + " : " + highPoints;
+            DataPersistence.Instance.playerName = playerName;
+            DataPersistence.Instance.highScore = highPoints;
+
+            DataPersistence.Instance.SaveHighScore();
+
+        }
     }
 }
