@@ -24,6 +24,7 @@ public class DataPersistence : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
+        LoadHighScore();
     }
     [System.Serializable]
     class SaveData
